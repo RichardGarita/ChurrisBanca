@@ -14,8 +14,8 @@ export default function SocialFeed () {
 
     useEffect(() => {
         axios.get(`${URL_API}?userId=${userId}`).then((response) => {
-            setPosts(response.data);
             setTotalPages(Math.ceil(response.data.length/ postsPerPage));
+            setPosts(response.data.sort((a, b) => a.date.localeCompare(b.date)));
         }).catch((error) => {
             console.error(error);
             alert('Error al obtener las publicaciones');
@@ -38,10 +38,16 @@ export default function SocialFeed () {
             const updatedPosts = posts.map((post) => {
                 if (post.postId === postId) {
                     if (reaction) {
+                        if (post.disliked)
+                            post.dislikes--;
                         post.liked = !post.liked;
+                        post.likes = post.liked ? post.likes + 1: post.likes - 1;
                         post.disliked = false;
                     } else {
+                        if (post.liked)
+                            post.likes--;
                         post.disliked = !post.disliked;
+                        post.dislikes = post.disliked ? post.dislikes + 1: post.dislikes - 1;
                         post.liked = false;
                     }
                 }
@@ -60,15 +66,22 @@ export default function SocialFeed () {
             {currentPosts.map((post, index) => (
                 <div key={index} className='card col-7 mx-auto text-start mb-1'>
                     <div className='card-body'>
-                        <h5 className='card-title me-auto'>{post.author}</h5>
-                        <h6 className="card-subtitle mb-2 text-body-secondary">{post.relation}</h6>
+                        <small className="card-subtitle mb-2 text-body-secondary">{post.date}</small>
+                        <h5 className='card-title'>{post.author}</h5>
+                        <small className="card-subtitle mb-2 text-body-secondary d-block">{post.relation}</small>
                         <p className="card-text">{post.content}</p>
 
                         <img className='img-fluid card-image-bottom' src={post.picture} alt='No se cargó bien la imagen'></img>
 
                         <section className='mt-1'>
-                            <button className={`btn btn-primary me-1 ${post.liked ? 'active' : ''}`} onClick={() => handleReaction(post.postId, true)}>{post.liked ? 'Te gusta': 'Dar me gusta'}</button>
-                            <button className={`btn btn-danger ${post.disliked ? 'active' : ''}`} onClick={() => handleReaction(post.postId, false)}>{post.disliked ? 'No te gusta': 'Dar no me gusta'}</button>
+                            <button className={`btn btn-primary me-1 ${post.liked ? 'active' : ''}`} onClick={() => handleReaction(post.postId, true)}>
+                                {post.likes > 0 ? <small className='me-2'>{post.likes}</small> : ''}
+                                {post.liked ? 'Te gusta': 'Dar me gusta'}
+                            </button>
+                            <button className={`btn btn-danger ${post.disliked ? 'active' : ''}`} onClick={() => handleReaction(post.postId, false)}>
+                                {post.dislikes > 0 ? <small className='me-2'>{post.dislikes}</small> : ''}
+                                {post.disliked ? 'No te gusta': 'Dar no me gusta'}
+                            </button>
                         </section>
                     </div>
                 </div>
