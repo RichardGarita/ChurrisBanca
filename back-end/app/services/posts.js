@@ -3,6 +3,7 @@ async function getSocialFeedPosts(userId) {
         {
             postId: 1,
             author: 'Jenna Doe',
+            authorId: 1,
             date: '12-05-2024',
             relation: 'Le sigues',
             content: 'Soy un texto dummy',
@@ -16,6 +17,7 @@ async function getSocialFeedPosts(userId) {
         {
             postId: 2,
             author: 'Jhon Doe',
+            authorId: 2,
             date: '08-05-2024',
             relation: 'Son amigos',
             content: 'Soy un texto dummy 2',
@@ -29,6 +31,7 @@ async function getSocialFeedPosts(userId) {
         {
             postId: 3,
             author: 'Peter Doe',
+            authorId: 3,
             date: '12-06-2024',
             relation: 'Le sigues',
             content: 'Soy un texto dummy por 3',
@@ -50,8 +53,13 @@ async function addDislike(postId, userId) {
     return true;
 }
 
+async function deletePost(postId, userId) {
+    return true;
+}
+
 module.exports = {
     getSocialFeedPosts,
     addLike,
-    addDislike
+    addDislike,
+    deletePost
 }

@@ -25,11 +25,22 @@ export default function SocialFeed () {
     useEffect(() => {
         let startIndex = (currentPage - 1) * postsPerPage;
         let endIndex = startIndex + postsPerPage;
-        setCurrentPosts(posts.slice(startIndex, endIndex)); 
+        setCurrentPosts(posts.slice(startIndex, endIndex));
+        setTotalPages(Math.ceil(posts.length/postsPerPage));
     }, [currentPage, posts]);
 
     const goToPage = (page) => {
         setCurrentPage(page);
+    }
+
+    const handleDelete = (postId) => {
+        axios.delete(`${URL_API}/${postId}?userId=${userId}`).then(() => {
+            const updatedPosts = posts.filter((post) => post.postId !== postId);
+            setPosts(updatedPosts);
+        }).catch((error) => {
+            console.error(error);
+            alert('Algo salió mal');
+        })
     }
 
     const handleReaction = (postId, reaction) => {
@@ -66,9 +77,18 @@ export default function SocialFeed () {
             {currentPosts.map((post, index) => (
                 <div key={index} className='card col-7 mx-auto text-start mb-1'>
                     <div className='card-body'>
-                        <small className="card-subtitle mb-2 text-body-secondary">{post.date}</small>
-                        <h5 className='card-title'>{post.author}</h5>
-                        <small className="card-subtitle mb-2 text-body-secondary d-block">{post.relation}</small>
+                        <div className='row'>
+                            <div className='col-3'>
+                                <small className="card-subtitle mb-2 text-body-secondary">{post.date}</small>
+                                <h5 className='card-title'>{post.author}</h5>
+                                <small className="card-subtitle mb-2 text-body-secondary">{post.relation}</small>
+                            </div>
+                            <div className='col-3 ms-auto text-end'>
+                                {post.authorId === userId && (
+                                    <button className='btn btn-danger' onClick={() => handleDelete(post.postId)}>Borrar</button>
+                                )}
+                            </div>
+                        </div>
                         <p className="card-text">{post.content}</p>
 
                         <img className='img-fluid card-image-bottom' src={post.picture} alt='No se cargó bien la imagen'></img>

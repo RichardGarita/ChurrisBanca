@@ -49,8 +49,27 @@ async function addDislike(req, res) {
     }
 }
 
+async function deletePost(req, res) {
+    try {
+        const postId = req.params.postId;
+        const userId = req.query.userId;
+        if (!postId || !userId) {
+            res.status(400).json('All fields are required');
+            return
+        }
+        const added = await posts.deletePost(postId, userId);
+        if (added)
+            res.status(200).json('Deleted correctly');
+        else
+            res.status(501).json('Something went wrong');
+    } catch (error) {
+        res.status(500).json(error);
+    }
+}
+
 module.exports = {
     getSocialFeedPosts,
     addLike,
     addDislike,
+    deletePost,
 }
