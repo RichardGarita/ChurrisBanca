@@ -1,5 +1,9 @@
 import React, {useState, useEffect} from 'react';
 import axios from 'axios';
+import { PlusCircleOutlined } from '@ant-design/icons';
+import {Button} from 'antd';
+import AddPost from './components/addPosts';
+import Modal from './components/modal';
 
 const URL_API = 'http://localhost:4223/api/posts';
 const userId = 2; // Por ahora el userId es una constante
@@ -9,6 +13,7 @@ export default function SocialFeed () {
     const [currentPosts, setCurrentPosts] = useState([]);
     const [totalPages, setTotalPages] = useState(0);
     const [currentPage, setCurrentPage] = useState(1);
+    const [showModal, setShowModal] = useState(false);
 
     const postsPerPage = 2;
 
@@ -74,6 +79,15 @@ export default function SocialFeed () {
 
     return (
         <>
+            <Modal
+                showModal={showModal}
+                setShowModal={setShowModal}
+                content={<AddPost/>}
+                titulo={"Agregar Publicación"}
+            />
+            <section className='col-7 mx-auto text-end'>
+                <Button onClick={() => setShowModal(!showModal)} className='w-auto h-auto' icon={<PlusCircleOutlined className='fs-1'/>}/>
+            </section>
             {currentPosts.map((post, index) => (
                 <div key={index} className='card col-7 mx-auto text-start mb-1'>
                     <div className='card-body'>
