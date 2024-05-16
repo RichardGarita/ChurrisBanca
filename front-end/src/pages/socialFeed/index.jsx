@@ -19,7 +19,6 @@ export default function SocialFeed () {
 
     useEffect(() => {
         axios.get(`${URL_API}?userId=${userId}`).then((response) => {
-            console.log(response.data);
             setTotalPages(Math.ceil(response.data.length/ postsPerPage));
             setPosts(response.data.sort((a, b) => a.timestamp.localeCompare(b.timestamp)));
         }).catch((error) => {
@@ -50,8 +49,8 @@ export default function SocialFeed () {
     }
 
     const handleReaction = (postId, reaction) => {
-        const data = {postId, userId};
-        axios.post(`${URL_API}/${reaction ? 'likes' : 'dislikes'}`, data).then(() => {
+        const data = {postId, userId, reaction};
+        axios.post(`${URL_API}/likes`, data).then(() => {
             const updatedPosts = posts.map((post) => {
                 if (post.id === postId) {
                     if (reaction) {
@@ -101,7 +100,7 @@ export default function SocialFeed () {
                                 </div>
                             </div>
                             <div className='col-3 ms-auto text-end'>
-                                {post.userId === userId && (
+                                {Number(post.user_id) === userId && (
                                     <button className='btn btn-danger' onClick={() => handleDelete(post.id)}>Borrar</button>
                                 )}
                             </div>

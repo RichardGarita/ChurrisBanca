@@ -16,37 +16,20 @@ async function getSocialFeedPosts(req, res){
 
 async function addLike(req, res) {
     try {
-        const {postId, userId} = req.body;
-        if (!postId || !userId) {
+        const {postId, userId, reaction} = req.body;
+        if (!postId || !userId || typeof reaction !== 'boolean') {
             res.status(400).json('All fields are required');
             return
         }
-        const added = await posts.addLike(postId, userId);
+        const added = await posts.addLike(postId, userId, reaction);
         if (added)
-            res.status(200).json('Liked correctly');
+            res.status(200).json('Like added correctly');
         else
             res.status(501).json('Something went wrong');
     } catch (error) {
         res.status(500).json(error);
     }
 
-}
-
-async function addDislike(req, res) {
-    try {
-        const {postId, userId} = req.body;
-        if (!postId || !userId) {
-            res.status(400).json('All fields are required');
-            return
-        }
-        const added = await posts.addDislike(postId, userId);
-        if (added)
-            res.status(200).json('Liked correctly');
-        else
-            res.status(501).json('Something went wrong');
-    } catch (error) {
-        res.status(500).json(error);
-    }
 }
 
 async function deletePost(req, res) {
@@ -70,6 +53,5 @@ async function deletePost(req, res) {
 module.exports = {
     getSocialFeedPosts,
     addLike,
-    addDislike,
     deletePost,
 }

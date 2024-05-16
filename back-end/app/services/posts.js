@@ -14,7 +14,10 @@ async function getSocialFeedPosts(userId) {
         const followed = await User.getFollowed(userId);
         const followedIds = followed.map((following) => following.followed_id);
 
-        const followedAndFriendsIds = [...new Set([...followedIds, ...friendsIds])];
+        const followedAndFriendsIds = [...new Set([...followedIds, ...friendsIds, userId])];
+
+        if (followedAndFriendsIds.length <= 0)
+            return [];
 
         const followedAndFriends = await User.getUser(followedAndFriendsIds);
         
@@ -41,7 +44,7 @@ async function getSocialFeedPosts(userId) {
             const user = followedAndFriends.find((user) => user.ID === post.user_id);
 
             // Ver si son amigos o si sole es seguido
-            const relation = friendsIds.includes(post.user_id) ? 'Son Amigos' : 'Lo sigues';
+            const relation = userId === post.user_id ? 'Tú' : (friendsIds.includes(post.user_id) ? 'Son Amigos' : 'Lo sigues');
 
             return { 
                 ...post,
@@ -61,12 +64,28 @@ async function getSocialFeedPosts(userId) {
     }
 }
 
-async function addLike(postId, userId) {
-    return true;
-}
+async function addLike(postId, userId, reaction) {
+    try {
+        if (!postId || !userId || typeof reaction !== 'boolean')
+            return false;
 
-async function addDislike(postId, userId) {
-    return true;
+        const like = await Likes.getLike(postId, userId);
+
+        if (like) {
+            if (like.value !== Number(reaction))
+                await Likes.updateLike(reaction, postId, userId);
+            else
+                await Likes.deleteLike(postId, userId);
+        } else {
+            await Likes.addLike(reaction, postId, userId);
+        }
+
+        return true;
+
+    } catch(error) {
+        console.error(error);
+        throw error;
+    }
 }
 
 async function deletePost(postId, userId) {
@@ -76,6 +95,5 @@ async function deletePost(postId, userId) {
 module.exports = {
     getSocialFeedPosts,
     addLike,
-    addDislike,
     deletePost
 }
