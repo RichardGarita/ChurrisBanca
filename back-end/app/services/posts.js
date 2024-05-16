@@ -1,48 +1,64 @@
+const Post = require('../models/posts');
+const User = require('../models/user');
+const Likes = require('../models/likes');
+
 async function getSocialFeedPosts(userId) {
-    return [
-        {
-            postId: 1,
-            author: 'Jenna Doe',
-            authorId: 1,
-            date: '12-05-2024',
-            relation: 'Le sigues',
-            content: 'Soy un texto dummy',
-            picture: 'blob',
-            liked: true,
-            disliked: false,
-            likes: 3,
-            dislikes: 2,
 
-        },
-        {
-            postId: 2,
-            author: 'Jhon Doe',
-            authorId: 2,
-            date: '08-05-2024',
-            relation: 'Son amigos',
-            content: 'Soy un texto dummy 2',
-            picture: 'blob',
-            liked: false,
-            disliked: false,
-            likes: 4,
-            dislikes: 0,
+    try {
+        if (!userId)
+            return;
 
-        },
-        {
-            postId: 3,
-            author: 'Peter Doe',
-            authorId: 3,
-            date: '12-06-2024',
-            relation: 'Le sigues',
-            content: 'Soy un texto dummy por 3',
-            picture: 'blob',
-            liked: false,
-            disliked: true,
-            likes: 1,
-            dislikes: 1,
+        const friends = await User.getFriends(userId);
+        const friendsIds = friends.map((friend) => friend.friend_id);
 
-        },
-    ]
+        const followed = await User.getFollowed(userId);
+        const followedIds = followed.map((following) => following.followed_id);
+
+        const followedAndFriendsIds = [...new Set([...followedIds, ...friendsIds])];
+
+        const followedAndFriends = await User.getUser(followedAndFriendsIds);
+        
+        const posts = await Post.getPosts(followedAndFriendsIds);
+        const postsId = posts.map((post) => post.id);
+
+        const likes = await Likes.getLikes(postsId);
+
+
+        const formatedPosts = posts.map((post) => {
+            // Filtrar los likes para esta publicación específica
+            const postLikes = likes.filter((like) => like.post_id === post.id);
+
+            // Separar los likes y los dislikes
+            const likesCount = postLikes.filter((like) => like.value === 1).length;
+            const dislikesCount = postLikes.filter((like) => like.value === 0).length;
+
+            // Verificar si el usuario actual ha dado like a esta publicación
+            const userLiked = postLikes.some((like) => like.user_id_liker === userId && like.value === 1);
+            const userDisliked = postLikes.some((like) => like.user_id_liker === userId && like.value === 0);
+
+
+            // Encontrar el nombre de usuario correspondiente
+            const user = followedAndFriends.find((user) => user.ID === post.user_id);
+
+            // Ver si son amigos o si sole es seguido
+            const relation = friendsIds.includes(post.user_id) ? 'Son Amigos' : 'Lo sigues';
+
+            return { 
+                ...post,
+                username: user.username,
+                likes: likesCount,
+                dislikes: dislikesCount,
+                liked: userLiked,
+                disliked: userDisliked,
+                relation: relation
+            };
+        });
+
+        return formatedPosts;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
 }
 
 async function addLike(postId, userId) {

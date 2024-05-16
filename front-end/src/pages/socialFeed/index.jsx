@@ -6,7 +6,7 @@ import AddPost from './components/addPosts';
 import Modal from './components/modal';
 
 const URL_API = 'http://localhost:4223/api/posts';
-const userId = 2; // Por ahora el userId es una constante
+const userId = 1; // Por ahora el userId es una constante
 
 export default function SocialFeed () {
     const [posts, setPosts] = useState([]);
@@ -19,8 +19,9 @@ export default function SocialFeed () {
 
     useEffect(() => {
         axios.get(`${URL_API}?userId=${userId}`).then((response) => {
+            console.log(response.data);
             setTotalPages(Math.ceil(response.data.length/ postsPerPage));
-            setPosts(response.data.sort((a, b) => a.date.localeCompare(b.date)));
+            setPosts(response.data.sort((a, b) => a.timestamp.localeCompare(b.timestamp)));
         }).catch((error) => {
             console.error(error);
             alert('Error al obtener las publicaciones');
@@ -40,7 +41,7 @@ export default function SocialFeed () {
 
     const handleDelete = (postId) => {
         axios.delete(`${URL_API}/${postId}?userId=${userId}`).then(() => {
-            const updatedPosts = posts.filter((post) => post.postId !== postId);
+            const updatedPosts = posts.filter((post) => post.id !== postId);
             setPosts(updatedPosts);
         }).catch((error) => {
             console.error(error);
@@ -52,7 +53,7 @@ export default function SocialFeed () {
         const data = {postId, userId};
         axios.post(`${URL_API}/${reaction ? 'likes' : 'dislikes'}`, data).then(() => {
             const updatedPosts = posts.map((post) => {
-                if (post.postId === postId) {
+                if (post.id === postId) {
                     if (reaction) {
                         if (post.disliked)
                             post.dislikes--;
@@ -92,27 +93,29 @@ export default function SocialFeed () {
                 <div key={index} className='card col-7 mx-auto text-start mb-1'>
                     <div className='card-body'>
                         <div className='row'>
-                            <div className='col-3'>
-                                <small className="card-subtitle mb-2 text-body-secondary">{post.date}</small>
-                                <h5 className='card-title'>{post.author}</h5>
-                                <small className="card-subtitle mb-2 text-body-secondary">{post.relation}</small>
+                            <div className='col-6'>
+                                <small className="card-subtitle text-body-secondary">{post.timestamp}</small>
+                                <div>
+                                    <h5 className='card-title mb-1 d-inline'>{post.username}</h5>
+                                    <small className="card-subtitle text-body-secondary ms-1">{post.relation}</small>
+                                </div>
                             </div>
                             <div className='col-3 ms-auto text-end'>
-                                {post.authorId === userId && (
-                                    <button className='btn btn-danger' onClick={() => handleDelete(post.postId)}>Borrar</button>
+                                {post.userId === userId && (
+                                    <button className='btn btn-danger' onClick={() => handleDelete(post.id)}>Borrar</button>
                                 )}
                             </div>
                         </div>
-                        <p className="card-text">{post.content}</p>
+                        <p className="card-text mb-1">{post.message}</p>
 
                         <img className='img-fluid card-image-bottom' src={post.picture} alt='No se cargó bien la imagen'></img>
 
                         <section className='mt-1'>
-                            <button className={`btn btn-primary me-1 ${post.liked ? 'active' : ''}`} onClick={() => handleReaction(post.postId, true)}>
+                            <button className={`btn btn-primary me-1 ${post.liked ? 'active' : ''}`} onClick={() => handleReaction(post.id, true)}>
                                 {post.likes > 0 ? <small className='me-2'>{post.likes}</small> : ''}
                                 {post.liked ? 'Te gusta': 'Dar me gusta'}
                             </button>
-                            <button className={`btn btn-danger ${post.disliked ? 'active' : ''}`} onClick={() => handleReaction(post.postId, false)}>
+                            <button className={`btn btn-danger ${post.disliked ? 'active' : ''}`} onClick={() => handleReaction(post.id, false)}>
                                 {post.dislikes > 0 ? <small className='me-2'>{post.dislikes}</small> : ''}
                                 {post.disliked ? 'No te gusta': 'Dar no me gusta'}
                             </button>
