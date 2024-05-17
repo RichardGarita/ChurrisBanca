@@ -21,11 +21,11 @@ async function getFriends(userId) {
         const friends = await pool.query(
             'SELECT ' +
             '   CASE ' + 
-            '       WHEN user_id1 = ? THEN user_id2 ' +
-            '       ELSE user_id1 ' +
+            '       WHEN USER_ID_OWNER = ? THEN USER_ID_FRIEND ' +
+            '       ELSE USER_ID_OWNER ' +
             '   END AS friend_id ' +
             'FROM friends ' +
-            'WHERE user_id1 = ? OR user_id2 = ?;',
+            'WHERE USER_ID_OWNER = ? OR USER_ID_FRIEND = ?;',
             [userId, userId, userId]
         );
 
@@ -41,7 +41,7 @@ async function getFollowed(userId) {
             return [];
 
         const followed = await pool.query(
-            'SELECT user_id_followed as followed_id FROM follows WHERE user_id_follower = ?',
+            'SELECT USER_ID_OWNER as followed_id FROM follow WHERE USER_ID_FOLLOWER = ?',
             userId
         );
 

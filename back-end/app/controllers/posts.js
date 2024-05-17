@@ -1,5 +1,24 @@
 const posts = require('../services/posts'); 
 
+async function createPost(req, res) {
+    try {
+        const {message, userId, picture} = req.body;
+        if (!userId || !(message || picture)) {
+            console.log(`UserId: ${userId}, message: ${message}, picture: ${picture}`);
+            res.status(400).json('All fields are required');
+            return
+        }
+        const result = await posts.createPost(userId, message, picture);
+        if(result)
+            res.status(200).json('Created correctly');
+        else
+            res.status(501).json({error: {message: 'Something went wrong'}});
+    } catch (error) {
+        console.error(error);
+        res.status(500).json(error);
+    }
+}
+
 async function getSocialFeedPosts(req, res){
     try {
         const userId = req.query.userId;
@@ -46,6 +65,7 @@ async function deletePost(req, res) {
         else
             res.status(501).json('Something went wrong');
     } catch (error) {
+        console.error(error);
         res.status(500).json(error);
     }
 }
@@ -54,4 +74,5 @@ module.exports = {
     getSocialFeedPosts,
     addLike,
     deletePost,
+    createPost,
 }

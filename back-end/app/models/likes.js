@@ -2,12 +2,12 @@ const pool = require('../../config/dbConfig');
 
 async function getLikes(postsId) {
     try {
-        if (!postsId)
+        if (postsId.length <= 0)
             return [];
 
         const placeholders = postsId.map(() => '?').join(', ');
         const likes = await pool.query(
-            `SELECT post_id, user_id_liker, value FROM likes WHERE post_id IN (${placeholders});`,
+            `SELECT POST_ID, USER_LIKER_ID, VALUE FROM likes WHERE POST_ID IN (${placeholders});`,
             postsId
         );
         return likes;
@@ -22,7 +22,7 @@ async function getLike(postId, userId) {
             return null;
 
         const like = await pool.query(
-            'SELECT * FROM likes WHERE post_id = ? AND user_id_liker = ?',
+            'SELECT * FROM likes WHERE POST_ID = ? AND USER_LIKER_ID = ?',
             [postId, userId]
         )
 
@@ -38,7 +38,7 @@ async function updateLike(value, postId, userId) {
             return null;
 
         await pool.query(
-            'UPDATE likes SET value = ? WHERE post_id = ? AND user_id_liker = ?',
+            'UPDATE likes SET VALUE = ? WHERE POST_ID = ? AND USER_LIKER_ID = ?',
             [value, postId, userId]
         )
     } catch (error) {
@@ -52,7 +52,7 @@ async function addLike(value, postId, userId) {
             return null;
 
         await pool.query(
-            'INSERT INTO likes (value, post_id, user_id_liker) VALUES (?, ?, ?)',
+            'INSERT INTO likes (VALUE, POST_ID, USER_LIKER_ID) VALUES (?, ?, ?)',
             [value, postId, userId]
         );
     } catch (error) {
@@ -66,8 +66,22 @@ async function deleteLike(postId, userId) {
             return null;
 
         await pool.query(
-            'DELETE FROM likes WHERE post_id = ? AND user_id_liker = ?',
+            'DELETE FROM likes WHERE POST_ID = ? AND USER_LIKER_ID = ?',
             [postId, userId]
+        );
+    } catch (error) {
+        throw error;
+    }
+}
+
+async function deletePostLikes(postId) {
+    try {
+        if (!postId)
+            return null;
+
+        await pool.query(
+            'DELETE FROM likes WHERE post_id = ?;',
+            postId
         );
     } catch (error) {
         throw error;
@@ -80,4 +94,5 @@ module.exports = {
     updateLike,
     addLike,
     deleteLike,
+    deletePostLikes,
 }
