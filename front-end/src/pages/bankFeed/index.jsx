@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react";
 import { PlusCircleOutlined } from '@ant-design/icons';
 import {Button} from 'antd';
+import axios from "axios";
 import CreateTransaction from "./components/createTransaction";
 import Modal from "../../utils/Modal";
 import '../../styles/BankFeed.css';
 import data from "./dummyData";
 
-const userId = 2;
+const userId = 402560399;
+const URL_API = 'https://cgibin05.com:8000/cgi-bin/getAccount';
 
 function BankFeed(){
     const [balance, setBalance] = useState({});
@@ -22,8 +24,22 @@ function BankFeed(){
 
     useEffect(() => {
         /** TO-DO:  Llamada al CGI*/
-        setBalance(data.account)
         setTransactions(data.transactions);
+    }, [])
+
+    useEffect(() => {
+        const body = `ID=${userId}`;
+        axios.post(URL_API, body).then((response) => {
+            if (Number(response.data.status) === 200)
+                setBalance(response.data.account);
+            else if (Number(response.data.status) === 404)
+                alert('No se encontró la cuenta');
+            else
+            alert('Error inesperado. Intente de nuevo');
+        }).catch((error) => {
+            console.error(error);
+            alert('Error del servidor. Intente de nuevo');
+        })
     }, [])
 
     useEffect(() => {
@@ -47,7 +63,7 @@ function BankFeed(){
             />
             <section className='col-7 row mx-auto my-2'>
                 <div className="col-6 text-start d-flex align-items-center p-0">
-                    <h4><strong>Balance: </strong>{balance.amount} {balance.currency}</h4>
+                    <h4><strong>Balance: </strong>{balance.AMOUNT} {balance.CURRENCY}</h4>
                 </div>
                 <div className="col-6 text-end p-0">
                 <Button onClick={() => setShowModal(true)} className='w-auto h-auto'
