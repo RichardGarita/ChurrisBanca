@@ -1,5 +1,5 @@
 import React from "react";
-import { Layout, Descriptions, Avatar } from "antd";
+import { Layout, Descriptions, Avatar, Button } from "antd";
 
 const { Content } = Layout;
 
@@ -9,6 +9,10 @@ const OthersProfile = (props) => {
   if (!userInfo) {
     return <div>cargando información de los usuarios...</div>;
   }
+
+  const handleGoBack = () => {
+    //va a la pagina anterior
+  };
 
   return (
     <Layout>
@@ -31,6 +35,13 @@ const OthersProfile = (props) => {
               {userInfo.number}
             </Descriptions.Item>
           </Descriptions>
+          <Button
+            type="primary"
+            style={{ marginTop: "20px" }}
+            onClick={handleGoBack}
+          >
+            Go Back
+          </Button>
         </div>
       </Content>
     </Layout>

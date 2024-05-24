@@ -18,12 +18,11 @@ const SelfProfile = () => {
 
   const handleSave = () => {
     setEditing(false);
-    // Para salvar la informacion al darle save
+    //guarda los cambios hechos
   };
 
   const handleChange = (key, value) => {
     if (key === "number") {
-      // solo entran 8 numeros
       if (/^\d{0,8}$/.test(value)) {
         setUserInfo({
           ...userInfo,
@@ -50,6 +49,10 @@ const SelfProfile = () => {
       };
       reader.readAsDataURL(file);
     }
+  };
+
+  const handleGoBack = () => {
+    //ira a la pagina anterior
   };
 
   return (
@@ -108,15 +111,20 @@ const SelfProfile = () => {
               )}
             </Descriptions.Item>
           </Descriptions>
-          {editing ? (
-            <Button type="primary" onClick={handleSave}>
-              Save
+          <div style={{ marginTop: "20px" }}>
+            {editing ? (
+              <Button type="primary" onClick={handleSave}>
+                Save
+              </Button>
+            ) : (
+              <Button type="primary" onClick={handleEdit}>
+                Edit
+              </Button>
+            )}
+            <Button style={{ marginLeft: "10px" }} onClick={handleGoBack}>
+              Go Back
             </Button>
-          ) : (
-            <Button type="primary" onClick={handleEdit}>
-              Edit
-            </Button>
-          )}
+          </div>
         </div>
       </Content>
     </Layout>
