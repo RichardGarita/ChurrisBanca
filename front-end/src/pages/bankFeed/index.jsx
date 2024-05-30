@@ -5,10 +5,11 @@ import axios from "axios";
 import CreateTransaction from "./components/createTransaction";
 import Modal from "../../utils/Modal";
 import '../../styles/BankFeed.css';
-import data from "./dummyData";
 
-const userId = 402560399;
-const URL_API = 'https://cgibin05.com:8000/cgi-bin/getAccount';
+const userId = 123456;
+const URL_API = 'https://cgibin05.com:8000/cgi-bin/';
+const URL_ACCOUNT = `${URL_API}getAccount`;
+const URL_TRANSACTIONS = `${URL_API}getTransactions`;
 
 function BankFeed(){
     const [balance, setBalance] = useState({});
@@ -18,21 +19,27 @@ function BankFeed(){
     const [totalPages, setTotalPages] = useState(0);
     const [currentPage, setCurrentPage] = useState(1);
 
-    const transactionsPerPage = 1;
+    const transactionsPerPage = 4;
 
     const [showModal, setShowModal] = useState(false);
 
     useEffect(() => {
-        /** TO-DO:  Llamada al CGI*/
-        setTransactions(data.transactions);
-    }, [])
-
-    useEffect(() => {
         const body = `ID=${userId}`;
-        axios.post(URL_API, body).then((response) => {
+        axios.post(URL_ACCOUNT, body).then((response) => {
             if (Number(response.data.status) === 200)
                 setBalance(response.data.account);
             else if (Number(response.data.status) === 404)
+                alert('No se encontró la cuenta');
+            else
+            alert('Error inesperado. Intente de nuevo');
+        }).catch((error) => {
+            console.error(error);
+            alert('Error del servidor. Intente de nuevo');
+        })
+        axios.post(URL_TRANSACTIONS, body).then((response) => {
+            if (Number(response.data.status) === 200)
+                setTransactions(response.data.transactions);
+            else if (Number(response.data.status) === 402)
                 alert('No se encontró la cuenta');
             else
             alert('Error inesperado. Intente de nuevo');
@@ -80,19 +87,19 @@ function BankFeed(){
                             <div className='col-4'>
                                 <small className="card-subtitle text-body-secondary">Remitente:</small>
                                 <div>
-                                    <h5 className='card-title mb-1 d-inline'>{transaction.sender}</h5>
+                                    <h5 className='card-title mb-1 d-inline'>{transaction.USER_ID_SENDER}</h5>
                                 </div>
                             </div>
                             <div className='col-4 text-center'>
                                 <small className="card-subtitle text-body-secondary">Monto:</small>
                                 <div>
-                                    <h5 className='card-title mb-1 d-inline'>{transaction.amount}</h5>
+                                    <h5 className='card-title mb-1 d-inline'>{transaction.AMOUNT} {transaction.CURRENCY}</h5>
                                 </div>
                             </div>
                             <div className='col-4 text-end'>
                                 <small className="card-subtitle text-body-secondary">Receptor:</small>
                                 <div>
-                                    <h5 className='card-title mb-1 d-inline'>{transaction.receiver}</h5>
+                                    <h5 className='card-title mb-1 d-inline'>{transaction.USER_ID_RECEIVER}</h5>
                                 </div>
                             </div>
                         </div>

@@ -1,5 +1,4 @@
 import {Route, Routes} from 'react-router-dom';
-import {Route, Routes} from 'react-router-dom';
 import Login from './pages/login/login';
 import BankFeed from './pages/bankFeed';
 import SocialFeed from './pages/socialFeed';
