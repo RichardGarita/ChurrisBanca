@@ -15,6 +15,7 @@ const agent = new https.Agent({
 const CGI_API = 'https://cgibin05.com/cgi-bin/';
 const GET_ACCOUNT_API = `${CGI_API}getAccount`;
 const GET_TRANSACTIONS_API = `${CGI_API}getTransactions`;
+const CREATE_TRANSACTIONS_API = `${CGI_API}makeTransaction`;
 
 async function getAccount(userId){
     try {
@@ -42,7 +43,21 @@ async function getTransactions(userId){
     }
 }
 
+async function createTransaction(sender, receiver, amount, currency) {
+    try {
+        const request = `ID1=${sender}&AMOUNT=${amount}&ID2=${receiver}&CURRENCY=${currency}`;
+        const response = await axios.post(CREATE_TRANSACTIONS_API, request, { httpsAgent: agent });
+        if (response.data.status === '200')
+            return response.data;
+        else
+            throw new Error('Error interno del CGI');
+    } catch (error){
+        throw error;
+    }
+}
+
 module.exports = {
     getAccount,
     getTransactions,
+    createTransaction,
 }

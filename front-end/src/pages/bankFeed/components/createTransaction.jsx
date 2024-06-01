@@ -1,11 +1,11 @@
 import { useState } from "react";
 import axios from "axios";
 
-const URL_API = 'https://cgibin05.com:8000/cgi-bin/makeTransaction'
+const URL_API = 'http://localhost:4223/api/bank/createTransaction'
 
 function CreateTransaction ({userId}) {
     const [formData, setFormData] = useState({
-        userId: userId,
+        sender: userId,
         receiver: '',
         amount: '',
         currency: 'Ch',
@@ -48,8 +48,7 @@ function CreateTransaction ({userId}) {
         if(!valid)
             return;
 
-        const body = `ID1=${formData.userId}&AMOUNT=${formData.amount}&ID2=${formData.receiver}&CURRENCY=${formData.currency}`;
-        axios.post(URL_API, body).then((response) => {
+        axios.post(URL_API, formData).then((response) => {
             if (Number(response.data.status) === 200) {
                 alert('Transacción completada exitosamente');
                 window.location.reload();

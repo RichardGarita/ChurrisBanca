@@ -31,7 +31,11 @@ function BankFeed(){
             alert('Error del servidor. Intente de nuevo');
         })
         axios.post(URL_TRANSACTIONS, body).then((response) => {
-            setTransactions(response.data);
+            if (response.data && response.data.length > 0) {
+                setTransactions(response.data.sort((a, b) => b.TIMESTAMP.localeCompare(a.TIMESTAMP)));
+            } else {
+                setTransactions([]);
+            }
         }).catch((error) => {
             console.error(error);
             alert('Error del servidor. Intente de nuevo');
