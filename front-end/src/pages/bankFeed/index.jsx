@@ -7,9 +7,8 @@ import Modal from "../../utils/Modal";
 import '../../styles/BankFeed.css';
 
 const userId = 123456;
-const URL_API = 'https://cgibin05.com:8000/cgi-bin/';
-const URL_ACCOUNT = `${URL_API}getAccount`;
-const URL_TRANSACTIONS = `${URL_API}getTransactions`;
+const URL_API = 'http://localhost:4223/api/bank/';
+const URL_TRANSACTIONS = `${URL_API}transactions`;
 
 function BankFeed(){
     const [balance, setBalance] = useState({});
@@ -24,25 +23,15 @@ function BankFeed(){
     const [showModal, setShowModal] = useState(false);
 
     useEffect(() => {
-        const body = `ID=${userId}`;
-        axios.post(URL_ACCOUNT, body).then((response) => {
-            if (Number(response.data.status) === 200)
-                setBalance(response.data.account);
-            else if (Number(response.data.status) === 404)
-                alert('No se encontró la cuenta');
-            else
-            alert('Error inesperado. Intente de nuevo');
+        const body = {userId};
+        axios.post(URL_API, body).then((response) => {
+            setBalance(response.data);
         }).catch((error) => {
             console.error(error);
             alert('Error del servidor. Intente de nuevo');
         })
         axios.post(URL_TRANSACTIONS, body).then((response) => {
-            if (Number(response.data.status) === 200)
-                setTransactions(response.data.transactions);
-            else if (Number(response.data.status) === 402)
-                alert('No se encontró la cuenta');
-            else
-            alert('Error inesperado. Intente de nuevo');
+            setTransactions(response.data);
         }).catch((error) => {
             console.error(error);
             alert('Error del servidor. Intente de nuevo');
@@ -50,10 +39,15 @@ function BankFeed(){
     }, [])
 
     useEffect(() => {
-        let startIndex = (currentPage - 1) * transactionsPerPage;
-        let endIndex = startIndex + transactionsPerPage;
-        setCurrentTransactions(transactions.slice(startIndex, endIndex));
-        setTotalPages(Math.ceil(transactions.length/transactionsPerPage));
+        if (transactions && transactions.length > 0) {
+            let startIndex = (currentPage - 1) * transactionsPerPage;
+            let endIndex = startIndex + transactionsPerPage;
+            setCurrentTransactions(transactions.slice(startIndex, endIndex));
+            setTotalPages(Math.ceil(transactions.length / transactionsPerPage));
+        } else {
+            setCurrentTransactions([]);
+            setTotalPages(0);
+        }
     }, [currentPage, transactions]);
 
     const goToPage = (page) => {
