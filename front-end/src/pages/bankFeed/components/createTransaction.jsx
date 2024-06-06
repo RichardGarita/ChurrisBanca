@@ -9,15 +9,18 @@ function CreateTransaction ({userId}) {
         receiver: '',
         amount: '',
         currency: 'Ch',
+        privateKey: '',
     });
 
     const [errorMessage, setErrorMessage] = useState({
         receiver: '',
         amount: '',
+        privateKey: '',
     });
 
     const receiverRegex = /^\d{1,10}$/;
     const amountRegex = /^\d{1,50}(\.\d{2})$/;
+    const privateKeyRegex = /^-----BEGIN PRIVATE KEY-----[\r\n]+([A-Za-z0-9+/=\r\n]+)[\r\n]+-----END PRIVATE KEY-----$/;
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -26,6 +29,7 @@ function CreateTransaction ({userId}) {
         let errors = {
             receiver: '',
             amount: '',
+            privateKey: '',
         };
 
         if (!receiverRegex.test(formData.receiver)) {
@@ -43,29 +47,68 @@ function CreateTransaction ({userId}) {
             valid = false;
         }
 
+        if (!formData.privateKey) {
+            errors.privateKey = 'Debe seleccionar una llave privada';
+            valid = false;
+        } else if (!privateKeyRegex.test(formData.privateKey)) {
+            errors.privateKey = 'El contenido de la llave privada no es válido';
+            valid = false;
+        }
+
+        if(formData.receiver === formData.sender) {
+            errors.receiver = 'El receptor debe ser distinto al emisor';
+            valid = false;
+        }
+
         setErrorMessage(errors);
 
         if(!valid)
             return;
 
-        axios.post(URL_API, formData).then((response) => {
-            if (Number(response.data.status) === 200) {
-                alert('Transacción completada exitosamente');
-                window.location.reload();
-            }
-            else {
-                alert('Error inesperado. Intente de nuevo');
-                console.log(response.data);
-            }
+        axios.post(URL_API, formData).then(() => {
+            alert('Transacción completada exitosamente');
+            window.location.reload();
         }).catch((error) => {
-            console.error(error);
-            alert('Error interno. Intente más tarde.')
+            if(error.response && error.response.status === 501)
+                alert('El certificado no es válido. Seguridad comprometida');
+            else if(error.response && error.response.status === 401)
+                alert('Llave privada inválida');
+            else if(error.response && error.response.status === 404)
+                alert('No se encontró al receptor');
+            else if(error.response && error.response.status === 402)
+                alert('Saldo insuficiente');
+            else
+                alert('Error interno. Intente más tarde.');
+        })
+        setFormData({
+            sender: userId,
+            receiver: '',
+            amount: '',
+            currency: 'Ch',
+            privateKey: '',
         })
     }
 
     const handleChange = (event) => {
-        const { name, value } = event.target;
-        setFormData((prevState) => ({ ...prevState, [name]: value }));
+        const { name, value, files } = event.target;
+        if (name === 'privateKey') {
+            const file = files[0];
+            if (file) {
+                if (file.name.endsWith('.key')) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const text = e.target.result;
+                        setFormData((prevState) => ({ ...prevState, privateKey: text}));
+                    };
+                    reader.readAsText(file);
+                } else {
+                    setErrorMessage((prevState) => ({ ...prevState, privateKey: 'El archivo debe ser de tipo .key' }));
+                    alert('El archivo debe ser de tipo .key');
+                }
+            }
+        } else {
+            setFormData((prevState) => ({ ...prevState, [name]: value }));
+        }
         setErrorMessage((prevState) => ({ ...prevState, [name]: '' }));
       };
 
@@ -93,7 +136,11 @@ function CreateTransaction ({userId}) {
                     </select>
                 </div>
 
-                <p className="mt-2 mb-2">TO-DO: Firmar transacción</p>
+                <div className=" form-group mb-1">
+                    <label htmlFor="amount">Llave privada:</label>
+                    <input name="privateKey" id="privateKey" type="file" className="form-control" onChange={handleChange} accept=".key"/>
+                    {errorMessage.privateKey && <small className="text-danger mb-1">{errorMessage.privateKey}</small>}
+                </div>
 
                 <div className="text-end">
                     <button type="submit" className="btn btn-primary">Enviar</button>

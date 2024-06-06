@@ -77,6 +77,7 @@ function BankFeed(){
                 />
                 </div>
             </section>
+            {currentTransactions.length <= 0 && (<h3>No hay transacciones</h3>)}
             {currentTransactions.map((transaction, index) => 
                 <div key={index} className='card col-7 mx-auto text-start mb-1'>
                     <div className='card-body'>
