@@ -8,11 +8,19 @@ const openssl = require('openssl-nodejs');
 
 // Construir la ruta absoluta al certificado ca-cert.pem
 const caPath = path.resolve(__dirname, '..', '..', 'certs', 'rootCACert.crt');
+
+const certPath = path.resolve(__dirname, '..', '..', 'certs', 'nodeAPI.crt');
+// Construir la ruta absoluta a la clave privada
+const keyPath = path.resolve(__dirname, '..', '..', 'certs', 'nodeAPI.key');
 // Leer el certificado de la CA autofirmada
 const ca = fs.readFileSync(caPath);
+const cert = fs.readFileSync(certPath);
+const key = fs.readFileSync(keyPath);
 
 const agent = new https.Agent({  
-  ca: ca
+  ca: ca,
+  cert: cert,
+  key: key
 });
 
 const CGI_API = 'https://cgibin05.com/cgi-bin/';
@@ -54,7 +62,7 @@ async function createTransaction(sender, receiver, amount, currency, privateKey)
         if(!cert) {
             throw new Error('Certificado Inválido');
         }
-        const certPath = path.resolve(__dirname, '..', '..', 'certs', cert);
+        const certPath = path.resolve(__dirname, '..', '..', 'users', cert);
         
         const isValid = await validateCert(certPath);
 

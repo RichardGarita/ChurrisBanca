@@ -1,5 +1,4 @@
 const pool = require('../../config/dbConfig');
-const { use } = require('../routes/login');
 
 async function checkLogin(userId, password) {
     try {
