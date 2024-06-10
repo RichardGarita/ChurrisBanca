@@ -1,4 +1,4 @@
-import React from "react";
+import { React } from "react";
 import { Button, Form, Input } from "antd";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -17,10 +17,10 @@ const Login = () => {
         };
         axios
             .post(URL_API, data)
-            .then(() => {
+            .then((res) => {
+                localStorage.setItem("token", res.data.token);
                 alert("Login Correcto");
-                navigator('/social-feed');
-                
+                navigator("/social-feed");
             })
             .catch((error) => {
                 console.error(error);
