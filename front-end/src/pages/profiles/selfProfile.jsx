@@ -73,7 +73,12 @@ const SelfProfile = () => {
         });
       }
     } else if (key === "username" || key === "email") {
-      if (value.length <= 50) {
+      // Permitir solo letras, números, @, y punto, y excluir caracteres peligrosos
+      const validPattern = /^[a-zA-Z0-9@._]*$/; 
+      console.log("antes del if del regex");
+      console.log(value);
+      if (validPattern.test(value) && value.length <= 50) {
+        console.log("entra el regex");
         setUserInfo({
           ...userInfo,
           [key]: value,
