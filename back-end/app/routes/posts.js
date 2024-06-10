@@ -1,12 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const controller = require('../controllers/posts');
+const {checkToken} = require('../jsonWT');
 
-router.get('/', controller.getSocialFeedPosts);
+router.get('/', checkToken, controller.getSocialFeedPosts);
 
-router.post('/', controller.createPost);
-router.post('/likes', controller.addLike);
+router.post('/', checkToken, controller.createPost);
+router.post('/likes', checkToken, controller.addLike);
 
-router.delete('/:postId', controller.deletePost);
+router.delete('/:postId', checkToken, controller.deletePost);
 
 module.exports = router;

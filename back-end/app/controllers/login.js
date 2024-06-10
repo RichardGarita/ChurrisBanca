@@ -12,7 +12,7 @@ async function login(req, res) {
         }
         const result = await loginService.loginService(userId, password);
         if (result) {
-            const token = generateJWT(userId);
+            const token = generateJWT(result);
             res.status(200).json({ auth: true, token });
         } else
             res.status(501).json({
