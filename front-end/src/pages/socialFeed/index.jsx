@@ -5,9 +5,10 @@ import { Button } from 'antd';
 import AddPost from './components/addPosts';
 import Modal from './components/modal';
 import { useNavigate } from "react-router-dom";
+import {jwtDecode} from 'jwt-decode';
+import AuthToken from '../../config/config';
 
 const URL_API = 'http://localhost:4223/api/posts';
-const userId = 1; // Por ahora el userId es una constante
 
 export default function SocialFeed() {
     const [posts, setPosts] = useState([]);
@@ -17,10 +18,15 @@ export default function SocialFeed() {
     const [showModal, setShowModal] = useState(false);
     const navigate = useNavigate();
 
+    const token = localStorage.getItem('token');
+    const decodedToken = jwtDecode(token);
+    const userId = decodedToken.ID;
+
     const postsPerPage = 2;
 
     useEffect(() => {
-        axios.get(`${URL_API}?userId=${userId}`).then((response) => {
+        AuthToken(token);
+        axios.get(URL_API).then((response) => {
             setTotalPages(Math.ceil(response.data.length / postsPerPage));
             setPosts(response.data.sort((a, b) => a.TIMESTAMP.localeCompare(b.TIMESTAMP)));
         }).catch((error) => {
@@ -41,7 +47,8 @@ export default function SocialFeed() {
     }
 
     const handleDelete = (postId) => {
-        axios.delete(`${URL_API}/${postId}?userId=${userId}`).then(() => {
+        AuthToken(token);
+        axios.delete(`${URL_API}/${postId}`).then(() => {
             const updatedPosts = posts.filter((post) => post.ID !== postId);
             setPosts(updatedPosts);
         }).catch((error) => {
@@ -51,7 +58,8 @@ export default function SocialFeed() {
     }
 
     const handleReaction = (postId, reaction) => {
-        const data = { postId, userId, reaction };
+        const data = { postId, reaction };
+        AuthToken(token);
         axios.post(`${URL_API}/likes`, data).then(() => {
             const updatedPosts = posts.map((post) => {
                 if (post.ID === postId) {

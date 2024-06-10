@@ -3,7 +3,7 @@ const pool = mariadb.createPool({
     host: "localhost",
     database: "social",
     user: "root",
-    password: "dylan",
+    password: "R1c4aR9!",
     connectionLimit: 5,
 });
 
