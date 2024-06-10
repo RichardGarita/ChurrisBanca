@@ -37,7 +37,26 @@ async function editProfile(req, res) {
     }
 }
 
+async function getUserId(req, res) {
+    try {
+        const {username, password} = req.query;
+        console.log(req.query);
+        if (!username || !password) {
+            console.log(`username: ${username}, password: ${password}`);
+            res.status(400).json('All fields are required');
+            return
+        }
+        const result = await profile.getUserId(username, password);
+        console.log(result);
+        res.status(200).json(result);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json(error);
+    }
+}
+
 module.exports = {
     getProfile,
     editProfile,
+    getUserId,
 };

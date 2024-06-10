@@ -8,7 +8,14 @@ const { Content } = Layout;
 const SelfProfile = () => {
   const [editing, setEditing] = useState(false);
   const URL_API = "http://localhost:4223/api/profile";
-  const userId = 1; // Por ahora el userId es una constante
+
+  const storedUserId = localStorage.getItem('userId');
+
+
+  const userData = JSON.parse(storedUserId);
+
+
+  const userId = userData.ID;
 
   const [userInfo, setUserInfo] = useState({
     username: "",
@@ -27,7 +34,6 @@ const SelfProfile = () => {
           number: TEL,
           avatar: PICTURE,
         });
-        console.log(PICTURE);
       })
       .catch(error => {
         console.error("Error fetching user profile", error);

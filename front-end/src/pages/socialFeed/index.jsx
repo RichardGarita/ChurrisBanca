@@ -4,6 +4,7 @@ import { PlusCircleOutlined, UserOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
 import AddPost from './components/addPosts';
 import Modal from './components/modal';
+import { useNavigate } from "react-router-dom";
 
 const URL_API = 'http://localhost:4223/api/posts';
 const userId = 1; // Por ahora el userId es una constante
@@ -14,6 +15,7 @@ export default function SocialFeed() {
     const [totalPages, setTotalPages] = useState(0);
     const [currentPage, setCurrentPage] = useState(1);
     const [showModal, setShowModal] = useState(false);
+    const navigate = useNavigate();
 
     const postsPerPage = 2;
 
@@ -77,7 +79,9 @@ export default function SocialFeed() {
     }
 
     const handleProfileClick = () => {
-        window.location.href = '/self-profile';
+        navigate('/self-profile');
+        /*const userId = 2; // Cambia esto según el ID del usuario que quieras pasar
+        navigate(`/others-profile/${userId}`);*/
     }
 
     return (

@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 const Login = () => {
     const [form] = Form.useForm();
     const URL_API = "http://localhost:4223/api/login";
+    const URL_API_ID = "http://localhost:4223/api/profile/id";
     const navigator = useNavigate();
 
     const onFinish = () => {
@@ -18,6 +19,14 @@ const Login = () => {
         axios
             .post(URL_API, data)
             .then(() => {
+                axios.get(`${URL_API_ID}?username=${username}&password=${password}`)
+                .then(response => {
+                    const userId = response.data;
+                    localStorage.setItem('userId', JSON.stringify(userId));
+                })
+                .catch(error => {
+                    console.error('Error fetching user data:', error);
+                });
                 alert("Login Correcto");
                 navigator('/social-feed');
                 
