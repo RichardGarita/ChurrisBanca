@@ -1,4 +1,4 @@
-import React from "react";
+import { React } from "react";
 import { Button, Form, Input } from "antd";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -18,18 +18,10 @@ const Login = () => {
         };
         axios
             .post(URL_API, data)
-            .then(() => {
-                axios.get(`${URL_API_ID}?username=${username}&password=${password}`)
-                .then(response => {
-                    const userId = response.data;
-                    localStorage.setItem('userId', JSON.stringify(userId));
-                })
-                .catch(error => {
-                    console.error('Error fetching user data:', error);
-                });
+            .then((res) => {
+                localStorage.setItem("token", res.data.token);
                 alert("Login Correcto");
-                navigator('/social-feed');
-                
+                navigator("/social-feed");
             })
             .catch((error) => {
                 console.error(error);
