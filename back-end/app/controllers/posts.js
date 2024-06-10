@@ -56,7 +56,7 @@ async function addLike(req, res) {
 async function deletePost(req, res) {
     try {
         const postId = req.params.postId;
-        const userId = req.query.userId;
+        const userId = req.user.ID;
         if (!postId || !userId) {
             res.status(400).json('All fields are required');
             return

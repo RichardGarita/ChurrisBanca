@@ -11,6 +11,8 @@ export default function AddPost() {
     const [errorMessage, setErrorMessage] = useState('');
 
     const token = localStorage.getItem('token');
+    if (!token)
+        window.location.replace('/');
 
     const sendRequest = (data) => {
         AuthToken(token);
@@ -19,7 +21,13 @@ export default function AddPost() {
             window.location.reload();
         }).catch((error) => {
             console.error(error);
-            alert('Error al crear la publicación');
+            if (error.response && error.response.status === 403) {
+                localStorage.removeItem('token');
+                alert('Sesión Expirada');
+                window.location.replace('/');
+            } else {
+                alert('Error al crear la publicación');
+            }
         })
 
     }
