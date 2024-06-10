@@ -6,7 +6,6 @@ import { useNavigate } from "react-router-dom";
 const Login = () => {
     const [form] = Form.useForm();
     const URL_API = "http://localhost:4223/api/login";
-    const URL_API_ID = "http://localhost:4223/api/profile/id";
     const navigator = useNavigate();
 
     const onFinish = () => {
