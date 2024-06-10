@@ -1,17 +1,19 @@
 import { useState } from "react";
 import axios from "axios";
+import AuthToken from '../../../config/config';
 
 const URL_API = 'http://localhost:4223/api/posts';
 const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024; // 10mb
-
-const userId = 3;
 
 export default function AddPost() {
     const [message, setMessage] = useState('');
     const [image, setImage] = useState(null);
     const [errorMessage, setErrorMessage] = useState('');
 
+    const token = localStorage.getItem('token');
+
     const sendRequest = (data) => {
+        AuthToken(token);
         axios.post(URL_API, data).then(() => {
             alert('Publicación creada exitosamente');
             window.location.reload();
@@ -42,7 +44,6 @@ export default function AddPost() {
             reader.onload = async () => {
                 const base64String = reader.result.split(',')[1];
                 const data = {
-                    userId,
                     message,
                     picture: base64String
                 };
@@ -50,7 +51,6 @@ export default function AddPost() {
             }
         } else {
             const data = {
-                userId,
                 message
             }
             sendRequest(data);

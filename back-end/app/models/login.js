@@ -7,7 +7,7 @@ async function checkLogin(userId, password) {
 
         const userData = await pool.query(`SELECT * FROM user WHERE username = ?;`, userId);
         if (userData[0].PASSWORD == password){
-            return true;
+            return userData[0].ID;
         } else{
             return false;
         }

@@ -2,9 +2,10 @@ const posts = require('../services/posts');
 
 async function createPost(req, res) {
     try {
-        const {message, userId, picture} = req.body;
+        const {message, picture} = req.body;
+        const userId = req.user.ID;
+        console.log(userId);
         if (!userId || !(message || picture)) {
-            console.log(`UserId: ${userId}, message: ${message}, picture: ${picture}`);
             res.status(400).json('All fields are required');
             return
         }
@@ -21,7 +22,7 @@ async function createPost(req, res) {
 
 async function getSocialFeedPosts(req, res){
     try {
-        const userId = req.query.userId;
+        const userId = req.user.ID;
         if (!userId) {
             res.status(400).json('All fields are required');
             return
@@ -35,7 +36,8 @@ async function getSocialFeedPosts(req, res){
 
 async function addLike(req, res) {
     try {
-        const {postId, userId, reaction} = req.body;
+        const {postId, reaction} = req.body;
+        const userId = req.user.ID;
         if (!postId || !userId || typeof reaction !== 'boolean') {
             res.status(400).json('All fields are required');
             return
