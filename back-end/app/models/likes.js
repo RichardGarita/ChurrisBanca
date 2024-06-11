@@ -7,7 +7,7 @@ async function getLikes(postsId) {
 
         const placeholders = postsId.map(() => '?').join(', ');
         const likes = await pool.query(
-            `SELECT POST_ID, USER_LIKER_ID, VALUE FROM likes WHERE POST_ID IN (${placeholders});`,
+            `SELECT POST_ID, USER_LIKER_ID, VALUE FROM LIKES WHERE POST_ID IN (${placeholders});`,
             postsId
         );
         return likes;
@@ -22,7 +22,7 @@ async function getLike(postId, userId) {
             return null;
 
         const like = await pool.query(
-            'SELECT * FROM likes WHERE POST_ID = ? AND USER_LIKER_ID = ?',
+            'SELECT * FROM LIKES WHERE POST_ID = ? AND USER_LIKER_ID = ?',
             [postId, userId]
         )
 
@@ -38,7 +38,7 @@ async function updateLike(value, postId, userId) {
             return null;
 
         await pool.query(
-            'UPDATE likes SET VALUE = ? WHERE POST_ID = ? AND USER_LIKER_ID = ?',
+            'UPDATE LIKES SET VALUE = ? WHERE POST_ID = ? AND USER_LIKER_ID = ?',
             [value, postId, userId]
         )
     } catch (error) {
@@ -52,7 +52,7 @@ async function addLike(value, postId, userId) {
             return null;
 
         await pool.query(
-            'INSERT INTO likes (VALUE, POST_ID, USER_LIKER_ID) VALUES (?, ?, ?)',
+            'INSERT INTO LIKES (VALUE, POST_ID, USER_LIKER_ID) VALUES (?, ?, ?)',
             [value, postId, userId]
         );
     } catch (error) {
