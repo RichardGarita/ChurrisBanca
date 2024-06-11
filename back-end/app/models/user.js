@@ -13,6 +13,17 @@ async function getUser(usersId) {
     }
 }
 
+async function getUserIdByUsername(username) {
+    try {
+        if (!username)
+            0;
+        const user = await pool.query(`SELECT * FROM USER WHERE USERNAME = ?;`, username);
+        return user[0].ID;
+    } catch (error) {
+        throw error;
+    }
+}
+
 async function getFriends(userId) {
     try {
         if (!userId)
@@ -51,9 +62,119 @@ async function getFollowed(userId) {
     }
 }
 
+async function verifyFollowed (follower, followed) {
+    try {
+        if (!followed || !follower)
+            return false;
+
+        const itFollows = await pool.query(
+            'SELECT * FROM follow WHERE USER_ID_FOLLOWER = ? AND USER_ID_OWNER = ?',
+            [follower, followed]
+        );
+        if (itFollows.length > 0)
+            return true;
+
+        return false;
+    } catch (error) {
+        throw error;
+    }
+}
+
+async function verifyFriends(userId, friendId) {
+    try {
+        if (!userId || !friendId)
+            return [];
+
+        const friends = await pool.query(
+            'SELECT * ' +
+            'FROM FRIENDS ' +
+            'WHERE (USER_ID_OWNER = ? AND USER_ID_FRIEND = ?) OR (USER_ID_FRIEND = ? AND USER_ID_OWNER = ?);',
+            [userId, friendId, userId, friendId]
+        );
+
+        if (friends.length > 0)
+            return true;
+
+        return false;
+    } catch (error) {
+        throw error;
+    }
+}
+
+async function followUser(userId, toFollow) {
+    try {
+        if (!userId || !toFollow)
+            return [];
+
+        await pool.query(
+            'INSERT INTO follow (USER_ID_OWNER, USER_ID_FOLLOWER) VALUES(?, ?)',
+            [toFollow, userId]
+        );
+
+        return true;
+    } catch (error) {
+        throw error;
+    }
+}
+
+async function unfollowUser(userId, toUnfollow) {
+    try {
+        if (!userId || !toUnfollow)
+            return [];
+
+        await pool.query(
+            'DELETE FROM FOLLOW WHERE USER_ID_OWNER = ? AND USER_ID_FOLLOWER = ?',
+            [toUnfollow, userId]
+        );
+
+        return true;
+    } catch (error) {
+        throw error;
+    }
+}
+
+async function makeFriends(userId, friendId) {
+    try {
+        if (!userId || !toFollow)
+            return [];
+
+        await pool.query(
+            'INSERT INTO FRIENDS (USER_ID_OWNER, USER_ID_FRIEND) VALUES(?, ?)',
+            [userId, friendId]
+        );
+
+        return true;
+    } catch (error) {
+        throw error;
+    }
+}
+
+async function unMakeFriends(userId, friendId) {
+    try {
+        if (!userId || !toFollow)
+            return [];
+
+        await pool.query(
+            'DELETE FROM FRIENDS WHERE (USER_ID_OWNER = ? AND USER_ID_FRIEND = ?) OR (USER_ID_FRIEND = ? AND USER_ID_OWNER = ?);',
+            [userId, friendId, userId, friendId]
+        );
+
+        return true;
+    } catch (error) {
+        throw error;
+    }
+}
+
 
 module.exports = {
     getUser,
+    getUserIdByUsername,
     getFriends,
     getFollowed,
+    verifyFollowed,
+    verifyFriends,
+    followUser,
+    makeFriends,
+    unfollowUser,
+    unMakeFriends
 }
