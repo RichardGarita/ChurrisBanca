@@ -4,6 +4,7 @@ import { PlusCircleOutlined, UserOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
 import AddPost from './components/addPosts';
 import Modal from './components/modal';
+import { useNavigate } from "react-router-dom";
 import {jwtDecode} from 'jwt-decode';
 import AuthToken from '../../config/config';
 
@@ -15,6 +16,7 @@ export default function SocialFeed() {
     const [totalPages, setTotalPages] = useState(0);
     const [currentPage, setCurrentPage] = useState(1);
     const [showModal, setShowModal] = useState(false);
+    const navigate = useNavigate();
 
     const token = localStorage.getItem('token');
     if (!token)
@@ -39,7 +41,7 @@ export default function SocialFeed() {
                 alert('Error al obtener las publicaciones');
             }
         });
-    }, []);
+    }, [token]);
 
     useEffect(() => {
         let startIndex = (currentPage - 1) * postsPerPage;
@@ -93,7 +95,7 @@ export default function SocialFeed() {
     }
 
     const handleProfileClick = () => {
-        window.location.href = '/self-profile';
+        navigate('/self-profile');
     }
 
     return (

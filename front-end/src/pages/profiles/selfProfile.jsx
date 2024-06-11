@@ -2,13 +2,19 @@ import React, { useState, useEffect } from "react";
 import { Layout, Descriptions, Input, Button, Avatar } from "antd";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import {jwtDecode} from 'jwt-decode';
+import AuthToken from '../../config/config';
 
 const { Content } = Layout;
 
 const SelfProfile = () => {
   const [editing, setEditing] = useState(false);
   const URL_API = "http://localhost:4223/api/profile";
-  const userId = 1; // Por ahora el userId es una constante
+
+  const token = localStorage.getItem('token');
+  const decodedToken = jwtDecode(token);
+  const userId = decodedToken.ID;
+
 
   const [userInfo, setUserInfo] = useState({
     username: "",
@@ -18,6 +24,7 @@ const SelfProfile = () => {
   });
 
   useEffect(() => {
+    AuthToken(token);
     axios.get(`${URL_API}?userId=${userId}`)
       .then(response => {
         const { USERNAME, MAIL, TEL, PICTURE } = response.data;
@@ -27,12 +34,11 @@ const SelfProfile = () => {
           number: TEL,
           avatar: PICTURE,
         });
-        console.log(PICTURE);
       })
       .catch(error => {
         console.error("Error fetching user profile", error);
       });
-  }, [userId]);
+  }, [userId, token]);
 
   const handleEdit = () => {
     setEditing(true);
@@ -67,7 +73,12 @@ const SelfProfile = () => {
         });
       }
     } else if (key === "username" || key === "email") {
-      if (value.length <= 50) {
+      // Permitir solo letras, números, @, y punto, y excluir caracteres peligrosos
+      const validPattern = /^[a-zA-Z0-9@._]*$/; 
+      console.log("antes del if del regex");
+      console.log(value);
+      if (validPattern.test(value) && value.length <= 50) {
+        console.log("entra el regex");
         setUserInfo({
           ...userInfo,
           [key]: value,
