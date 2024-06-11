@@ -4,7 +4,6 @@ async function createPost(req, res) {
     try {
         const {message, picture} = req.body;
         const userId = req.user.ID;
-        console.log(userId);
         if (!userId || !(message || picture)) {
             res.status(400).json('All fields are required');
             return

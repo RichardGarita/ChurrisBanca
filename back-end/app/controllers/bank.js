@@ -2,7 +2,7 @@ const Service = require('../services/bank');
 
 async function getAccount(req, res){
     try {
-        const {userId} = req.body;
+        const userId = req.user.ID;
         if (!userId) {
             res.status(400).json('All fields are required');
             return
@@ -16,7 +16,7 @@ async function getAccount(req, res){
 
 async function getTransactions(req, res){
     try {
-        const {userId} = req.body;
+        const userId = req.user.ID;
         if (!userId) {
             res.status(400).json('All fields are required');
             return
@@ -30,12 +30,13 @@ async function getTransactions(req, res){
 
 async function createTransaction(req, res) {
     try {
-        const {sender, receiver, amount, currency, privateKey} = req.body;
-        if (!sender || !receiver || !amount || !currency || !privateKey) {
+        const {receiver, amount, currency, privateKey} = req.body;
+        const userId = req.user.ID;
+        if (!userId || !receiver || !amount || !currency || !privateKey) {
             res.status(400).json('All fields are required');
             return
         }
-        const result = await Service.createTransaction(sender, receiver, amount, currency, privateKey);
+        const result = await Service.createTransaction(userId, receiver, amount, currency, privateKey);
         res.status(200).json(result);
     } catch (error) {
         console.error(`Error: ${error}`);

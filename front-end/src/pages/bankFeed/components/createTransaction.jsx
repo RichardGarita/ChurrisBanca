@@ -1,11 +1,15 @@
 import { useState } from "react";
 import axios from "axios";
+import AuthToken from '../../../config/config';
 
 const URL_API = 'http://localhost:4223/api/bank/createTransaction'
 
-function CreateTransaction ({userId}) {
+function CreateTransaction () {
+    const token = localStorage.getItem('token');
+    if (!token)
+        window.location.replace('/');
+
     const [formData, setFormData] = useState({
-        sender: userId,
         receiver: '',
         amount: '',
         currency: 'Ch',
@@ -18,7 +22,7 @@ function CreateTransaction ({userId}) {
         privateKey: '',
     });
 
-    const receiverRegex = /^\d{1,10}$/;
+    const receiverRegex = /^\d{9}$/;
     const amountRegex = /^\d{1,50}(\.\d{2})$/;
     const privateKeyRegex = /^-----BEGIN PRIVATE KEY-----[\r\n]+([A-Za-z0-9+/=\r\n]+)[\r\n]+-----END PRIVATE KEY-----$/;
 
@@ -33,7 +37,7 @@ function CreateTransaction ({userId}) {
         };
 
         if (!receiverRegex.test(formData.receiver)) {
-            errors.receiver = 'El receptor debe ser un número de 10 dígitos';
+            errors.receiver = 'El receptor debe ser un número de 9 dígitos';
             valid = false;
         }
 
@@ -65,6 +69,7 @@ function CreateTransaction ({userId}) {
         if(!valid)
             return;
 
+        AuthToken(token);
         axios.post(URL_API, formData).then(() => {
             alert('Transacción completada exitosamente');
             window.location.reload();
@@ -81,7 +86,6 @@ function CreateTransaction ({userId}) {
                 alert('Error interno. Intente más tarde.');
         })
         setFormData({
-            sender: userId,
             receiver: '',
             amount: '',
             currency: 'Ch',
@@ -124,7 +128,7 @@ function CreateTransaction ({userId}) {
                 <div className=" form-group mb-1">
                     <label htmlFor="amount">Monto</label>
                     <input name="amount" id="amount" type="number" className="form-control" value={formData.amount} onChange={handleChange}
-                    min={1.00}/>
+                    min={0.01} step={0.01}/>
                     {errorMessage.amount && <small className="text-danger mb-1">{errorMessage.amount}</small>}
                 </div>
 

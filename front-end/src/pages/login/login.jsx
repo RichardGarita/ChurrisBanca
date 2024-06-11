@@ -21,6 +21,7 @@ const Login = () => {
                 localStorage.setItem("token", res.data.token);
                 alert("Login Correcto");
                 navigator("/social-feed");
+                window.location.reload()
             })
             .catch((error) => {
                 console.error(error);

@@ -1,3 +1,7 @@
 .ant-btn-icon {
     display: flex !important;
 }
+
+.onClick:hover, .page-item:hover {
+    cursor: pointer !important;
+}

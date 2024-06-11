@@ -1,16 +1,20 @@
 import { useState, useEffect } from "react";
-import { PlusCircleOutlined } from '@ant-design/icons';
+import { PlusCircleOutlined, WechatOutlined } from '@ant-design/icons';
 import {Button} from 'antd';
 import axios from "axios";
 import CreateTransaction from "./components/createTransaction";
 import Modal from "../../utils/Modal";
+import AuthToken from '../../config/config';
 import '../../styles/BankFeed.css';
 
-const userId = 123456;
 const URL_API = 'http://localhost:4223/api/bank/';
 const URL_TRANSACTIONS = `${URL_API}transactions`;
 
 function BankFeed(){
+    const token = localStorage.getItem('token');
+    if (!token)
+        window.location.replace('/');
+
     const [balance, setBalance] = useState({});
 
     const [transactions, setTransactions] = useState([]);
@@ -23,14 +27,21 @@ function BankFeed(){
     const [showModal, setShowModal] = useState(false);
 
     useEffect(() => {
-        const body = {userId};
-        axios.post(URL_API, body).then((response) => {
+        AuthToken(token);
+        axios.get(URL_API).then((response) => {
             setBalance(response.data);
         }).catch((error) => {
             console.error(error);
-            alert('Error del servidor. Intente de nuevo');
+            if (error.response && error.response.status === 403) {
+                localStorage.removeItem('token');
+                alert('Sesión Expirada');
+                window.location.replace('/');
+            } else {
+                alert('Error del servidor. Intente de nuevo');
+            }
         })
-        axios.post(URL_TRANSACTIONS, body).then((response) => {
+        AuthToken(token);
+        axios.get(URL_TRANSACTIONS).then((response) => {
             if (response.data && response.data.length > 0) {
                 setTransactions(response.data.sort((a, b) => b.TIMESTAMP.localeCompare(a.TIMESTAMP)));
             } else {
@@ -38,7 +49,13 @@ function BankFeed(){
             }
         }).catch((error) => {
             console.error(error);
-            alert('Error del servidor. Intente de nuevo');
+            if (error.response && error.response.status === 403) {
+                localStorage.removeItem('token');
+                alert('Sesión Expirada');
+                window.location.replace('/');
+            } else {
+                alert('Error del servidor. Intente de nuevo');
+            }
         })
     }, [])
 
@@ -64,17 +81,19 @@ function BankFeed(){
                 showModal={showModal}
                 setShowModal={setShowModal}
                 title={'Crear transacción'}
-                content={<CreateTransaction userId={userId}/>}
+                content={<CreateTransaction/>}
             />
             <section className='col-7 row mx-auto my-2'>
                 <div className="col-6 text-start d-flex align-items-center p-0">
-                    <h4><strong>Balance: </strong>{balance.AMOUNT} {balance.CURRENCY}</h4>
+                    <h5><strong>Balance: </strong>{balance.AMOUNT} {balance.CURRENCY}</h5>
+                    <h5 className="ms-2"><strong>Cuenta: </strong>{balance.ID}</h5>
                 </div>
                 <div className="col-6 text-end p-0">
                 <Button onClick={() => setShowModal(true)} className='w-auto h-auto'
                 icon={<><PlusCircleOutlined className='fs-1'/>
                     <p className="d-inline m-auto ms-1">Nueva transacción</p></>}
                 />
+                <Button onClick={() => window.location.href = '/social-feed'} className='w-auto h-auto ms-2' icon={<WechatOutlined className='fs-1' />} />
                 </div>
             </section>
             {currentTransactions.length <= 0 && (<h3>No hay transacciones</h3>)}
