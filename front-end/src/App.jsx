@@ -6,13 +6,21 @@ import SocialFeed from './pages/socialFeed';
 import './App.css';
 
 function App() {
+  const token = localStorage.getItem('token');
+
   return (
     <div className="App mt-2 mt-2">
       <Routes>
-        <Route path='/' element={<Login/>} />
-        <Route path='/social-feed' element={<SocialFeed/>} />
-        <Route path='/bank-feed' element={<BankFeed/>} />
-        <Route path='/self-profile' element={<SelfProfile/>} />
+        {!token ? (
+          <Route path='*' element={<Login/>} />
+        ) : (
+          <>
+            <Route path='/*' element={<SocialFeed/>} />
+            <Route path='/social-feed' element={<SocialFeed/>} />
+            <Route path='/bank-feed' element={<BankFeed/>} />
+            <Route path='/self-profile' element={<SelfProfile/>} />
+          </>
+        )}
       </Routes>
     </div>
   );

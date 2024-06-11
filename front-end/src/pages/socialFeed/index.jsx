@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { PlusCircleOutlined, UserOutlined } from '@ant-design/icons';
+import { PlusCircleOutlined, UserOutlined, BankOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
 import AddPost from './components/addPosts';
 import Modal from './components/modal';
@@ -108,7 +108,9 @@ export default function SocialFeed() {
             <section className='col-7 mx-auto text-end'>
                 <Button onClick={() => setShowModal(!showModal)} className='w-auto h-auto' icon={<PlusCircleOutlined className='fs-1' />} />
                 <Button onClick={handleProfileClick} className='w-auto h-auto ms-2' icon={<UserOutlined className='fs-1' />} />
+                <Button onClick={() => window.location.href = '/bank-feed'} className='w-auto h-auto ms-2' icon={<BankOutlined className='fs-1' />} />
             </section>
+            {posts.length <= 0 && (<h3>No hay publicaciones</h3>)}
             {currentPosts.map((post, index) => (
                 <div key={index} className='card col-7 mx-auto text-start mb-1'>
                     <div className='card-body'>
