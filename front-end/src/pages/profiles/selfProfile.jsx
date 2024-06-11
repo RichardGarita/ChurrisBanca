@@ -38,7 +38,7 @@ const SelfProfile = () => {
       .catch(error => {
         console.error("Error fetching user profile", error);
       });
-  }, [userId]);
+  }, [userId, token]);
 
   const handleEdit = () => {
     setEditing(true);
