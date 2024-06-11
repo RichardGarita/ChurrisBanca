@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { PlusCircleOutlined, UserOutlined, BankOutlined } from '@ant-design/icons';
+import { PlusCircleOutlined, UserOutlined, BankOutlined, UserAddOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
 import AddPost from './components/addPosts';
+import Friends from './components/friends';
 import Modal from './components/modal';
 import { useNavigate } from "react-router-dom";
 import {jwtDecode} from 'jwt-decode';
@@ -15,7 +16,8 @@ export default function SocialFeed() {
     const [currentPosts, setCurrentPosts] = useState([]);
     const [totalPages, setTotalPages] = useState(0);
     const [currentPage, setCurrentPage] = useState(1);
-    const [showModal, setShowModal] = useState(false);
+    const [showModalAdd, setShowModalAdd] = useState(false);
+    const [showModalFriends, setShowModalFriends] = useState(false);
     const navigate = useNavigate();
 
     const token = localStorage.getItem('token');
@@ -101,20 +103,32 @@ export default function SocialFeed() {
     return (
         <>
             <Modal
-                showModal={showModal}
-                setShowModal={setShowModal}
+                showModal={showModalAdd}
+                setShowModal={setShowModalAdd}
                 size={'lg'}
                 content={<AddPost />}
                 titulo={"Agregar Publicación"}
             />
-            <section className='col-7 mx-auto text-end'>
-                <Button onClick={() => setShowModal(!showModal)} className='w-auto h-auto' icon={<PlusCircleOutlined className='fs-1' />} />
-                <Button onClick={handleProfileClick} className='w-auto h-auto ms-2' icon={<UserOutlined className='fs-1' />} />
-                <Button onClick={() => window.location.href = '/bank-feed'} className='w-auto h-auto ms-2' icon={<BankOutlined className='fs-1' />} />
+            <Modal
+                showModal={showModalFriends}
+                setShowModal={setShowModalFriends}
+                size={'xs'}
+                content={<Friends/>}
+                titulo={"Interactuar con amigos"}
+            />
+            <section className='col-7 row mx-auto'>
+                <div className='col-6 text-start'>
+                    <Button onClick={() => setShowModalFriends(!showModalFriends)} className='w-auto h-auto' icon={<UserAddOutlined className='fs-1' />} />
+                </div>
+                <div className='col-6 text-end'>
+                    <Button onClick={() => setShowModalAdd(!showModalAdd)} className='w-auto h-auto' icon={<PlusCircleOutlined className='fs-1' />} />
+                    <Button onClick={handleProfileClick} className='w-auto h-auto ms-2' icon={<UserOutlined className='fs-1' />} />
+                    <Button onClick={() => window.location.href = '/bank-feed'} className='w-auto h-auto ms-2' icon={<BankOutlined className='fs-1' />} />
+                </div>
             </section>
             {posts.length <= 0 && (<h3>No hay publicaciones</h3>)}
             {currentPosts.map((post, index) => (
-                <div key={index} className='card col-7 mx-auto text-start mb-1'>
+                <div key={index} className='card col-7 mx-auto text-start mb-1 mt-2'>
                     <div className='card-body'>
                         <div className='row'>
                             <div className='col-6'>

@@ -3,9 +3,7 @@ const profile = require('../services/profile');
 async function getProfile(req, res) {
     try {
         const { userId } = req.query;
-        console.log(req.query); // Verifica que los parámetros de consulta se reciban correctamente
         if (!userId) {
-            console.log(`UserId: ${userId}`);
             res.status(400).json('All fields are required');
             return;
         }

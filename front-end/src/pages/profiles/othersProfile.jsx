@@ -16,7 +16,7 @@ const OthersProfile = () => {
   });
   const [loading, setLoading] = useState(true);
   const [friends, setFriends] = useState(true);
-  const URL_API = "http://localhost:4223/api/profile"; // Ajusta la URL de la API según tu configuración
+  const URL_API = "http://localhost:4223/api/profile";
   const navigate = useNavigate(); // Initialize useNavigate
   const { userId } = useParams();
 
@@ -90,9 +90,10 @@ const OthersProfile = () => {
           <h1>Profile</h1>
           <Avatar
             size={100}
-            style={{ marginBottom: "20px" }}
             src={userInfo.avatar}
           />
+          <small className="d-block mb-2">Te sigue</small>
+
           <Descriptions title="User Info" bordered style={{ flexDirection: "column" }}>
             <Descriptions.Item label="Username">
               {userInfo.username}
