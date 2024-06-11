@@ -11,10 +11,10 @@ const caPath = path.resolve(__dirname, '..', '..', 'certs', 'rootCACert.crt');
 
 // Descomentar esto en la NAC
 
-const certPath = path.resolve(__dirname, '..', '..', 'certs', 'nodeAPI.crt');
-const keyPath = path.resolve(__dirname, '..', '..', 'certs', 'nodeAPI.key');
-const cert = fs.readFileSync(certPath);
-const key = fs.readFileSync(keyPath);
+// const certPath = path.resolve(__dirname, '..', '..', 'certs', 'nodeAPI.crt');
+// const keyPath = path.resolve(__dirname, '..', '..', 'certs', 'nodeAPI.key');
+// const cert = fs.readFileSync(certPath);
+// const key = fs.readFileSync(keyPath);
 
 // Leer el certificado de la CA autofirmada
 const ca = fs.readFileSync(caPath);
@@ -22,8 +22,8 @@ const ca = fs.readFileSync(caPath);
 // Descomentar en la NAC
 const agent = new https.Agent({  
   ca: ca,
-  cert: cert,
-  key: key
+  //cert: cert,
+  //key: key
 });
 
 const CGI_API = 'https://cgibin05.com/cgi-bin/';

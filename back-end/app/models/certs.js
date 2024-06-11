@@ -5,7 +5,7 @@ async function getCertPath(userId) {
         if (!userId)
             return null;
 
-        const cert = await pool.query(`SELECT * FROM certs WHERE ID = ?;`, userId);
+        const cert = await pool.query(`SELECT * FROM CERTS WHERE ID = ?;`, userId);
         return cert[0].CERT;
     } catch (error) {
         throw error;
