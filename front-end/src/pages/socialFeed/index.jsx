@@ -19,6 +19,8 @@ export default function SocialFeed() {
     const navigate = useNavigate();
 
     const token = localStorage.getItem('token');
+    if (!token)
+        window.location.replace('/');
     const decodedToken = jwtDecode(token);
     const userId = decodedToken.ID;
 
@@ -31,7 +33,13 @@ export default function SocialFeed() {
             setPosts(response.data.sort((a, b) => a.TIMESTAMP.localeCompare(b.TIMESTAMP)));
         }).catch((error) => {
             console.error(error);
-            alert('Error al obtener las publicaciones');
+            if (error.response && error.response.status === 403) {
+                localStorage.removeItem('token');
+                alert('Sesión Expirada');
+                window.location.replace('/');
+            } else {
+                alert('Error al obtener las publicaciones');
+            }
         });
     }, [token]);
 
