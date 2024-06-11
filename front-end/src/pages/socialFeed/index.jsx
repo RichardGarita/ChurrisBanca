@@ -120,7 +120,7 @@ export default function SocialFeed() {
                             <div className='col-6'>
                                 <small className="card-subtitle text-body-secondary">{post.TIMESTAMP}</small>
                                 <div>
-                                    <h5 className='card-title mb-1 d-inline'>{post.username}</h5>
+                                    <h5 onClick={() => window.location.href = `/others-profile/${post.USER_ID_AUTHOR}`} className='card-title mb-1 d-inline onClick'>{post.username}</h5>
                                     <small className="card-subtitle text-body-secondary ms-1">{post.relation}</small>
                                 </div>
                             </div>
