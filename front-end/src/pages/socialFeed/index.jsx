@@ -33,7 +33,7 @@ export default function SocialFeed() {
             console.error(error);
             alert('Error al obtener las publicaciones');
         });
-    }, []);
+    }, [token]);
 
     useEffect(() => {
         let startIndex = (currentPage - 1) * postsPerPage;
@@ -88,8 +88,6 @@ export default function SocialFeed() {
 
     const handleProfileClick = () => {
         navigate('/self-profile');
-        /*const userId = 2; // Cambia esto según el ID del usuario que quieras pasar
-        navigate(`/others-profile/${userId}`);*/
     }
 
     return (

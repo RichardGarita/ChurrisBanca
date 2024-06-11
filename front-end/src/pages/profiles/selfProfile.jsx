@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Layout, Descriptions, Input, Button, Avatar } from "antd";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import {jwtDecode} from 'jwt-decode';
+import AuthToken from '../../config/config';
 
 const { Content } = Layout;
 
@@ -9,13 +11,10 @@ const SelfProfile = () => {
   const [editing, setEditing] = useState(false);
   const URL_API = "http://localhost:4223/api/profile";
 
-  const storedUserId = localStorage.getItem('userId');
+  const token = localStorage.getItem('token');
+  const decodedToken = jwtDecode(token);
+  const userId = decodedToken.ID;
 
-
-  const userData = JSON.parse(storedUserId);
-
-
-  const userId = userData.ID;
 
   const [userInfo, setUserInfo] = useState({
     username: "",
@@ -25,6 +24,7 @@ const SelfProfile = () => {
   });
 
   useEffect(() => {
+    AuthToken(token);
     axios.get(`${URL_API}?userId=${userId}`)
       .then(response => {
         const { USERNAME, MAIL, TEL, PICTURE } = response.data;

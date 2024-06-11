@@ -1,4 +1,5 @@
 const Profile = require('../models/profile');
+const User = require('../models/user');
 
 async function getProfile(userId) {
     try {
@@ -37,8 +38,23 @@ async function getUserId(username, password) {
     }
 }
 
+async function isFriend(userId, otherUserId) {
+    try {
+        if (!userId || !otherUserId) return false;
+        const friends = await User.getFriends(userId);
+
+        const friendExists = friends.some((friend) => friend.friend_id === Number(otherUserId));
+        
+        return friendExists;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+}
+
 module.exports = {
     getProfile,
     editProfile,
-    getUserId
+    getUserId,
+    isFriend
 };
