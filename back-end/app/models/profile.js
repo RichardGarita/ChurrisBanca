@@ -27,7 +27,22 @@ async function editProfile(userId, username, mail, tel, picture) {
     }
 }
 
+async function getUserId(username, password) {
+    try {
+        if (!username || !password)
+            return null;
+
+        const userId = await pool.query(`SELECT ID FROM USER
+            WHERE USERNAME = ? AND PASSWORD = ?;
+            `, [username, password]);
+        return userId[0];
+    } catch (error) {
+        throw error;
+    }
+}
+
 module.exports = {
     getProfile,
     editProfile,
+    getUserId,
 }
